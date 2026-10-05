@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   backgroundColors,
   contentWidthArr,
@@ -21,62 +21,54 @@ import type { ArticleStateType, OptionType } from 'src/constants/articleProps';
 import styles from './ArticleParamsForm.module.scss';
 
 type ArticleParamsFormProps = {
-  style: ArticleStateType;
-  styleHandler: (selected: ArticleStateType) => void;
+  applyArticleStyles: (selected: ArticleStateType) => void;
 };
 
 export const ArticleParamsForm = ({
-  style,
-  styleHandler,
+  applyArticleStyles,
 }: ArticleParamsFormProps): React.JSX.Element => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [selectedStyles, setSelectedStyles] =
     useState<ArticleStateType>(defaultArticleState);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
 
   useOutsideClickClose({
-    isOpen,
-    rootRef,
-    onChange: setIsOpen,
+    isOpen: isFormOpen,
+    rootRef: formRef,
+    onChange: setIsFormOpen,
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedStyles(style);
-    }
-  }, [isOpen, style]);
-
-  const setSelectedStylesHandler = (
+  const updateSelectedStyle = (
     selected: OptionType,
     type: keyof ArticleStateType
   ): void => {
     setSelectedStyles((prev) => ({ ...prev, [type]: selected }));
   };
 
-  const openHandler = (): void => {
-    setIsOpen((prev) => !prev);
+  const toggleForm = (): void => {
+    setIsFormOpen((prev) => !prev);
   };
 
-  const resetHandler = (): void => {
-    styleHandler(defaultArticleState);
+  const resetForm = (): void => {
+    applyArticleStyles(defaultArticleState);
     setSelectedStyles(defaultArticleState);
   };
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>): void => {
+  const submitForm = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    styleHandler(selectedStyles);
+    applyArticleStyles(selectedStyles);
   };
 
   return (
     <>
-      <ArrowButton isOpen={isOpen} onClick={openHandler} />
+      <ArrowButton isOpen={isFormOpen} onClick={toggleForm} />
       <aside
         className={clsx(styles.container, {
-          [styles.container_open]: isOpen,
+          [styles.container_open]: isFormOpen,
         })}
-        ref={rootRef}
+        ref={formRef}
       >
-        <form className={styles.form} onSubmit={submitHandler}>
+        <form className={styles.form} onSubmit={submitForm} onReset={resetForm}>
           <Text as="h2" size={31} weight={800} uppercase dynamicLite>
             Задайте параметры
           </Text>
@@ -84,23 +76,21 @@ export const ArticleParamsForm = ({
             selected={selectedStyles.fontFamilyOption}
             options={fontFamilyOptions}
             placeholder="Выберите шрифт"
-            onChange={(selected) =>
-              setSelectedStylesHandler(selected, 'fontFamilyOption')
-            }
+            onChange={(selected) => updateSelectedStyle(selected, 'fontFamilyOption')}
             title="шрифт"
           />
           <RadioGroup
             name="radio"
             options={fontSizeOptions}
             selected={selectedStyles.fontSizeOption}
-            onChange={(selected) => setSelectedStylesHandler(selected, 'fontSizeOption')}
+            onChange={(selected) => updateSelectedStyle(selected, 'fontSizeOption')}
             title="размер шрифта"
           />
           <Select
             selected={selectedStyles.fontColor}
             options={fontColors}
             placeholder="Выберите цвет шрифта"
-            onChange={(selected) => setSelectedStylesHandler(selected, 'fontColor')}
+            onChange={(selected) => updateSelectedStyle(selected, 'fontColor')}
             title="цвет шрифта"
           />
           <Separator />
@@ -108,25 +98,18 @@ export const ArticleParamsForm = ({
             selected={selectedStyles.backgroundColor}
             options={backgroundColors}
             placeholder="Выберите цвет фона"
-            onChange={(selected) =>
-              setSelectedStylesHandler(selected, 'backgroundColor')
-            }
+            onChange={(selected) => updateSelectedStyle(selected, 'backgroundColor')}
             title="цвет фона"
           />
           <Select
             selected={selectedStyles.contentWidth}
             options={contentWidthArr}
             placeholder="Выберите ширину контента"
-            onChange={(selected) => setSelectedStylesHandler(selected, 'contentWidth')}
+            onChange={(selected) => updateSelectedStyle(selected, 'contentWidth')}
             title="ширина контента"
           />
           <div className={styles.bottomContainer}>
-            <Button
-              title="Сбросить"
-              onClick={resetHandler}
-              htmlType="reset"
-              type="clear"
-            />
+            <Button title="Сбросить" htmlType="reset" type="clear" />
             <Button title="Применить" htmlType="submit" type="apply" />
           </div>
         </form>

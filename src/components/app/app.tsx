@@ -11,10 +11,11 @@ import type { CSSProperties } from 'react';
 import styles from './app.module.scss';
 
 export const App = (): React.JSX.Element => {
-  const [style, setStyle] = useState<ArticleStateType>(defaultArticleState);
+  const [articleStyles, setArticleStyles] =
+    useState<ArticleStateType>(defaultArticleState);
 
-  const styleHandler = (selected: ArticleStateType): void => {
-    setStyle(selected);
+  const applyArticleStyles = (selected: ArticleStateType): void => {
+    setArticleStyles(selected);
   };
 
   return (
@@ -22,15 +23,15 @@ export const App = (): React.JSX.Element => {
       className={clsx(styles.main)}
       style={
         {
-          '--font-family': style.fontFamilyOption.value,
-          '--font-size': style.fontSizeOption.value,
-          '--font-color': style.fontColor.value,
-          '--bg-color': style.backgroundColor.value,
-          '--container-width': style.contentWidth.value,
+          '--font-family': articleStyles.fontFamilyOption.value,
+          '--font-size': articleStyles.fontSizeOption.value,
+          '--font-color': articleStyles.fontColor.value,
+          '--bg-color': articleStyles.backgroundColor.value,
+          '--container-width': articleStyles.contentWidth.value,
         } as CSSProperties
       }
     >
-      <ArticleParamsForm style={style} styleHandler={styleHandler} />
+      <ArticleParamsForm applyArticleStyles={applyArticleStyles} />
       <Article />
     </main>
   );
