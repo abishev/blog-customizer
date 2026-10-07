@@ -69,7 +69,7 @@ export const ArticleParamsForm = ({
         ref={formRef}
       >
         <form className={styles.form} onSubmit={submitForm} onReset={resetForm}>
-          <Text as="h2" size={31} weight={800} uppercase dynamicLite>
+          <Text as="h2" size={31} weight={800} uppercase>
             Задайте параметры
           </Text>
           <Select
